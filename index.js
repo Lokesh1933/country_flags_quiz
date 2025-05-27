@@ -1,9 +1,8 @@
-import dotenv from "dotenv"
-dotenv.config()
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import bodyParser from "body-parser";
-import pg from "pg"
-
+import pg from "pg";
 
 const app = express();
 const port = 3000;
@@ -13,18 +12,17 @@ const db = new pg.Client({
   database: "world",
   password: process.env.PASSWORD,
   port: 5432,
-})
-db.connect()
-let quiz = []
-db.query("SELECT * FROM flags",(err,res) => {
-  if(err){
-    console.error("Error in executing query",err.stack)
+});
+db.connect();
+let quiz = [];
+db.query("SELECT * FROM flags", (err, res) => {
+  if (err) {
+    console.error("Error in executing query", err.stack);
+  } else {
+    quiz = res.rows;
   }
-  else {
-    quiz = res.rows
-  }
-  db.end()
-})
+  db.end();
+});
 
 let totalCorrect = 0;
 
@@ -35,9 +33,9 @@ app.use(express.static("public"));
 let currentQuestion = {};
 
 // GET home page
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
   totalCorrect = 0;
-  nextQuestion();
+  await nextQuestion();
   console.log(currentQuestion);
   res.render("index.ejs", { question: currentQuestion });
 });
@@ -60,7 +58,7 @@ app.post("/submit", (req, res) => {
   });
 });
 
-function nextQuestion() {
+async function nextQuestion() {
   const randomCountry = quiz[Math.floor(Math.random() * quiz.length)];
   currentQuestion = randomCountry;
 }
