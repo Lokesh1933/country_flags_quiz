@@ -15,7 +15,12 @@ const db = new pg.Client({
 })
 db.connect()
 db.query("SELECT * FROM flags",(err,res) => {
-  
+  if(err){
+    console.error("Error in executing query",err.stack)
+  }
+  else {
+    quiz = res.rows
+  }
 })
 
 let totalCorrect = 0;
